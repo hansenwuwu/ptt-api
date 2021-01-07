@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import fastapi
 
 import json
 import requests
@@ -8,6 +8,7 @@ app = FastAPI()
 
 PTT_URL = 'https://www.ptt.cc'
 
+@app.get('/')
 @app.get("/api/v1")
 async def root():
     return {"message": "Hello World"}
