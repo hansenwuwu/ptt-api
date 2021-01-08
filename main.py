@@ -30,8 +30,8 @@ async def popular_forum():
             break
         count += 1
         m = {}
-        m['board_name'] = ""
-        m['board_nuser'] = 0
+        # m['board_name'] = ""
+        # m['board_nuser'] = 0
         a = board.find('a', 'board')
         if a.find('div', "board-name"):
             m['board_name'] = a.find('div', "board-name").text
