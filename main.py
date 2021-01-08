@@ -14,7 +14,7 @@ PTT_URL = 'https://www.ptt.cc'
 async def root():
     return {"message": "Hello World"}
 
-@app.get("/api/v1/popular-forum")
+@app.get("/api/v1/forum/popular")
 async def popular_forum():
     content = requests.get(
             url= PTT_URL + '/bbs/index.html',
@@ -40,4 +40,8 @@ async def popular_forum():
         output.append(m)
     # output = json.dumps(output)
     return {"message": output}
+
+@app.get("/api/v1/forum/{forum_name}")
+async def forum_(forum_name, page: int = 0):
+    return {"message": forum_name, "page": page}
 
