@@ -5,6 +5,7 @@ from fastapi import FastAPI
 import json
 import requests
 from bs4 import BeautifulSoup
+import os
 
 app = FastAPI()
 
@@ -49,8 +50,33 @@ async def forum_(forum_name, page: int = 0):
             cookies={'over18': '1'}, timeout=3
         ).content.decode('utf-8')
     soup = BeautifulSoup(content, 'html.parser')
-    divs = soup.find_all("div", "r-ent")
+
+    '''
+    找出上下頁
+    '''
+    action_bar_container = soup.find('div', {'id': 'action-bar-container'})
+    links = action_bar_container.find_all('a')
+    previous_page_id = ''
+    next_page_id = ''
+    for a in links:
+        if "上頁" in a.text:
+            if a.get('href'):
+                # print("這是上頁: " , a.get('href'))
+                url = a.get('href')
+                url = url.rsplit('/', 1)[-1]
+                url = os.path.splitext(url)
+                previous_page_id = url[0][5:]
+
+        elif "下頁" in a.text:
+            if a.get('href'):
+                # print("這是下頁: " , a.get('href'))
+                url = a.get('href')
+                url = url.rsplit('/', 1)[-1]
+                url = os.path.splitext(url)
+                next_page_id = url[0][5:]
+
     articles = []
+    divs = soup.find_all("div", "r-ent")
     for div in divs:
         m = {}
         m['author'] = "null"
@@ -97,7 +123,13 @@ async def forum_(forum_name, page: int = 0):
             print(e)
         articles.append(m)
 
-    return {"forum": forum_name, "page": page, "articles": articles}
+    output = {
+        "previous_page_id": previous_page_id,
+        "next_page_id": next_page_id,
+        "articles": articles,
+    }
+
+    return {"forum": forum_name, "page": page, "output": output}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

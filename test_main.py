@@ -19,7 +19,7 @@ def test_get_forum_page():
     
     for e in popular_forum_list:
         board_name = e['board_name']
-        page = 5
+        page = 0
         response = client.get("/api/v1/forum/" + board_name + '?page=' + str(page))
         message = response.json()
         assert response.status_code == 200
